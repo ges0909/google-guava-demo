@@ -103,4 +103,23 @@ public class GuavaCollectionTests {
         List<Integer> castedList = (List<Integer>) (List<? extends Number>) list;
         assertThat(castedList).isNotNull();
     }
+
+    @Test
+    public void hashBasedTable() {
+        // first name, last name, age
+        Table<String /*row key*/, String /*column key*/, Integer /*cell value*/> table = HashBasedTable.create();
+        table.put("Max", "Mustermann", 44);
+        table.put("Biene", "Maya", 4);
+        Integer cellValue = table.get("Biene", "Maya");
+        assertThat(table.size()).isEqualTo(2);
+        assertThat(cellValue).isEqualTo(4);
+    }
+
+    @Test
+    public void treeBasedTable() {
+        // if a table is needed whose row keys and the column keys need to be ordered by
+        // their natural ordering or by supplying comparators, use a TreeBasedTable, which
+        // uses TreeMap internally
+        Table<String, String, Integer> table = HashBasedTable.create();
+    }
 }
