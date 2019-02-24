@@ -37,24 +37,21 @@ public class GuavaCollectionTests {
     }
 
     @Test
-    // create immutable List from a standard collection
-    public void immutableList() {
+    public void immutableListFromStandardList() {
         final List<Number> list = Lists.newArrayList();
         final ImmutableList<Number> immutableList = ImmutableList.copyOf(list);
         assertThat(immutableList).isNotNull().isEmpty();
     }
 
     @Test
-    // create immutable Set from a standard collection
-    public void immutableSet() {
+    public void immutableSetFromStandardSet() {
         final Set<Number> set = Sets.newHashSet();
         final ImmutableSet<Number> immutableSet = ImmutableSet.copyOf(set);
         assertThat(immutableSet).isNotNull().isEmpty();
     }
 
     @Test
-    // create immutable Map from a standard collection
-    public void immutableMap() {
+    public void immutableMapFromStandardMap() {
         final Map<Number, String> map = Maps.newHashMap();
         final ImmutableMap<Number, String> immutableMap = ImmutableMap.copyOf(map);
         assertThat(immutableMap).isNotNull().isEmpty();
@@ -62,22 +59,35 @@ public class GuavaCollectionTests {
 
     @Test
     public void addIterableToCollection() {
-        final String[] arr = {"uno", "due", "tre"};
-        final Iterable<String> iter = Lists.newArrayList(arr);
+        final String[] array = {"uno", "due", "tre"};
+        final Iterable<String> iterable = Lists.newArrayList(array);
         final Collection<String> collection = Lists.newArrayList();
-        Iterables.addAll(collection, iter);
-        assertThat(collection).isNotNull().isNotEmpty().hasSize(arr.length);
+        Iterables.addAll(collection, iterable);
+        assertThat(collection)
+                .isNotNull()
+                .isNotEmpty()
+                .hasSize(array.length)
+                .containsExactlyInAnyOrder("uno", "due", "tre");
     }
 
     @Test
-    // check if collection contains element(s) according to a custom matching rule
-    public void anyWithCustomMatcher() {
+    public void checkIfAnyElementsMatchACondition() {
         final Iterable<String> collection = Lists.newArrayList("a", "bc", "def");
         // 'any' returns 'true' if any element satisfies the predicate
         final boolean containsAny = Iterables.any(collection, elem -> elem != null && elem.length() == 1);
         assertThat(containsAny).isTrue();
         final boolean containsNot = Iterables.any(collection, "uno"::equals);
         assertThat(containsNot).isFalse();
+    }
+
+
+    @Test
+    public void checkIfAllElementsMatchACondition() {
+        final List<String> names = Lists.newArrayList("John", "Jane", "Adam", "Tom");
+        boolean containsAll = Iterables.all(names, Predicates.containsPattern("n|m"));
+        assertThat(containsAll).isTrue();
+        containsAll = Iterables.all(names, Predicates.containsPattern("a"));
+        assertThat(containsAll).isFalse();
     }
 
     @Test
@@ -88,7 +98,7 @@ public class GuavaCollectionTests {
     }
 
     @Test
-    public void findDefaultValue() {
+    public void findWithCustomMatcherAndDefaultValue() {
         final String whenNotFound = "";
         final Iterable<String> collection = Sets.newHashSet("a", "bc", "def");
         final String findAny = Iterables.find(collection, elem -> "not found".equals(elem), whenNotFound);
@@ -96,18 +106,20 @@ public class GuavaCollectionTests {
     }
 
     @Test
-    public void filterWithPredefinedPredicateContainsPattern() {
+    public void filterWithPredefinedPredicate() {
         final List<String> names = Lists.newArrayList("John", "Jane", "Adam", "Tom");
-        final Collection<String> result = Collections2.filter(names, Predicates.containsPattern("a"));
-        assertThat(result.size()).isEqualTo(2);
-        assertThat(result).containsExactlyInAnyOrder("Jane", "Adam");
-        // the result of 'Collections.filter()' is a live view of the original collection;
-        // changes to one will be reflected in the other
-        result.add("Anna");
+        // variant 1
+        final Iterable<String> iterableResult = Iterables.filter(names, Predicates.containsPattern("a"));
+        assertThat(iterableResult).containsExactlyInAnyOrder("Jane", "Adam");
+        // variant 2
+        final Collection<String> collectionResult = Collections2.filter(names, Predicates.containsPattern("a"));
+        assertThat(collectionResult.size()).isEqualTo(2);
+        assertThat(collectionResult).containsExactlyInAnyOrder("Jane", "Adam");
+        // the result of 'Collections.filter()' is a live view of the original collection; changes to one will be reflected in the other
+        collectionResult.add("Anna");
         assertThat(names.size()).isEqualTo(5);
-        // 'result' is constrained by the predicate; if we add an element that doesn’t
-        // satisfy that Predicate, an IllegalArgumentException will be thrown
-        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> result.add("Elvis"));
+        // 'result' is constrained by the predicate; if we add an element that does’nt satisfy that Predicate, an IllegalArgumentException will be thrown
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> collectionResult.add("Elvis"));
     }
 
     @Test
@@ -143,15 +155,6 @@ public class GuavaCollectionTests {
     }
 
     @Test
-    public void checkIfAllElementsMatchACondition() {
-        final List<String> names = Lists.newArrayList("John", "Jane", "Adam", "Tom");
-        boolean result = Iterables.all(names, Predicates.containsPattern("n|m"));
-        assertThat(result).isTrue();
-        result = Iterables.all(names, Predicates.containsPattern("a"));
-        assertThat(result).isFalse();
-    }
-
-    @Test
     public void casting() {
         final List<Number> list = Lists.newArrayList();
         final List<Integer> castedList = (List<Integer>) (List<? extends Number>) list;
@@ -179,69 +182,71 @@ public class GuavaCollectionTests {
 
     @Test
     public void transform() {
-        Function<String, Integer> func = new Function<String, Integer>() {
+        final List<String> names = Lists.newArrayList("John", "Jane", "Adam", "Tom");
+        final Function<String, Integer> mapper = new Function<String, Integer>() {
             @Override
             public Integer apply(String input) {
                 return input.length();
             }
         };
-        List<String> names = Lists.newArrayList("John", "Jane", "Adam", "Tom");
-        Collection<Integer> result = Collections2.transform(names, func);
-        assertThat(result.size()).isEqualTo(4);
-        assertThat(result).contains(4, 4, 4, 3);
-        result.remove(3);
-        assertThat(result.size()).isEqualTo(3);
+        // variant 1
+        final Iterable<Integer> iterableResult = Iterables.transform(names, mapper);
+        assertThat(iterableResult).contains(4, 4, 4, 3);
+        // variant 2
+        final Collection<Integer> collectionResult = Collections2.transform(names, mapper);
+        assertThat(collectionResult.size()).isEqualTo(4);
+        assertThat(collectionResult).contains(4, 4, 4, 3);
+        collectionResult.remove(3);
+        assertThat(collectionResult.size()).isEqualTo(3);
     }
 
     @Test
     public void createFunctionFromAPredicate() {
-        List<String> names = Lists.newArrayList("John", "Jane", "Adam", "Tom");
-        Collection<Boolean> result =
-                Collections2.transform(names,
-                        Functions.forPredicate(Predicates.containsPattern("m")));
+        final List<String> names = Lists.newArrayList("John", "Jane", "Adam", "Tom");
+        final Collection<Boolean> result = Collections2.transform(names,
+                Functions.forPredicate(Predicates.containsPattern("m")));
         assertThat(result.size()).isEqualTo(4);
         assertThat(result).contains(false, false, true, true);
     }
 
     @Test
-    public void transformUsingComposedFunction() {
-        Function<String, Integer> f1 = new Function<String, Integer>() {
+    public void transformWithComposedFunction() {
+        final Function<String, Integer> mapper1 = new Function<String, Integer>() {
             @Override
             public Integer apply(String input) {
                 return input.length();
             }
         };
-        Function<Integer, Boolean> f2 = new Function<Integer, Boolean>() {
+        final Function<Integer, Boolean> mapper2 = new Function<Integer, Boolean>() {
             @Override
             public Boolean apply(Integer input) {
                 return input % 2 == 0;
             }
         };
-        List<String> names = Lists.newArrayList("John", "Jane", "Adam", "Tom");
-        Collection<Boolean> result =
-                Collections2.transform(names, Functions.compose(f2, f1));
+        final List<String> names = Lists.newArrayList("John", "Jane", "Adam", "Tom");
+        final Collection<Boolean> result = Collections2.transform(names, Functions.compose(mapper2, mapper1));
         assertThat(result.size()).isEqualTo(4);
         assertThat(result).contains(true, true, true, false);
     }
 
     @Test
-    public void combineFilterAndTransfWithFluentIterable() {
-        Predicate<String> predicate = new Predicate<String>() {
+    public void combineFilterAndTransformWithFluentIterable() {
+        final Predicate<String> predicate = new Predicate<String>() {
             @Override
             public boolean apply(String input) {
                 return input.startsWith("A") || input.startsWith("T");
             }
         };
-        Function<String, Integer> func = new Function<String, Integer>() {
+        final Function<String, Integer> mapper = new Function<String, Integer>() {
             @Override
             public Integer apply(String input) {
                 return input.length();
             }
         };
-        List<String> names = Lists.newArrayList("John", "Jane", "Adam", "Tom");
-        Collection<Integer> result = FluentIterable.from(names)
+        final List<String> names = Lists.newArrayList("John", "Jane", "Adam", "Tom");
+        final Collection<Integer> result = FluentIterable.from(names)
                 .filter(predicate)
-                .transform(func)
+                .transform(mapper)
                 .toList();
         assertThat(result.size()).isEqualTo(2);
         assertThat(result).containsExactlyInAnyOrder(4, 3);
