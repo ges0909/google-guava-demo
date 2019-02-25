@@ -1,57 +1,52 @@
 package de.gerritschrader;
 
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
+import com.google.common.base.*;
 import com.google.common.collect.*;
+import com.google.common.primitives.Ints;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.Test;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-public class GuavaCollectionTests {
+public class CollectionTests {
 
     @Test
-    public void newArrayList() {
+    public void createNewArrayList() {
         final List<Number> list = Lists.newArrayList();
         assertThat(list).isNotNull().isEmpty();
     }
 
     @Test
-    public void newHashSet() {
+    public void createNewHashSet() {
         final Set<Number> set = Sets.newHashSet();
         assertThat(set).isNotNull().isEmpty();
     }
 
     @Test
-    public void newHashMap() {
+    public void createNewHashMap() {
         final Map<Number, String> map = Maps.newHashMap();
         assertThat(map).isNotNull().isEmpty();
     }
 
     @Test
-    public void immutableListFromStandardList() {
+    public void createImmutableListFromStandardList() {
         final List<Number> list = Lists.newArrayList();
         final ImmutableList<Number> immutableList = ImmutableList.copyOf(list);
         assertThat(immutableList).isNotNull().isEmpty();
     }
 
     @Test
-    public void immutableSetFromStandardSet() {
+    public void createImmutableSetFromStandardSet() {
         final Set<Number> set = Sets.newHashSet();
         final ImmutableSet<Number> immutableSet = ImmutableSet.copyOf(set);
         assertThat(immutableSet).isNotNull().isEmpty();
     }
 
     @Test
-    public void immutableMapFromStandardMap() {
+    public void createImmutableMapFromStandardMap() {
         final Map<Number, String> map = Maps.newHashMap();
         final ImmutableMap<Number, String> immutableMap = ImmutableMap.copyOf(map);
         assertThat(immutableMap).isNotNull().isEmpty();
@@ -67,7 +62,20 @@ public class GuavaCollectionTests {
                 .isNotNull()
                 .isNotEmpty()
                 .hasSize(array.length)
-                .containsExactlyInAnyOrder("uno", "due", "tre");
+                .containsExactly("uno", "due", "tre");
+    }
+
+    @Test
+    public void concatIterables() {
+        List<String> list1 = Lists.newArrayList("uno");
+        List<String> list2 = Lists.newArrayList("due", "tre");
+        List<String> list3 = Lists.newArrayList("quattro", "cinque");
+        Iterable<String> iterable = Iterables.concat(list1, list2, list3);
+        assertThat(iterable)
+                .isNotNull()
+                .isNotEmpty()
+                .hasSize(list1.size() + list2.size() + list3.size())
+                .containsExactly("uno", "due", "tre", "quattro", "cinque");
     }
 
     @Test
@@ -91,18 +99,73 @@ public class GuavaCollectionTests {
     }
 
     @Test
-    public void findWithCustomMatcher() {
-        final Iterable<String> collection = Sets.newHashSet("a", "bc", "def");
-        final String findAny = Iterables.find(collection, elem -> elem.length() == 1);
-        assertThat(findAny).isEqualTo("a");
+    public void getSizeOfIterable() {
+        List<Integer> list = Lists.newArrayList(1, 2, 3);
+        int size = Iterables.size(list);
+        assertThat(size).isEqualTo(3);
     }
 
     @Test
-    public void findWithCustomMatcherAndDefaultValue() {
+    public void getFirstElementOfList() {
+        List<String> list = Lists.newArrayList("uno", "due", "tre");
+        String firstElement = Iterables.getFirst(list, null);
+        assertThat(firstElement).isEqualTo("uno");
+    }
+
+    @Test
+    public void getLastElementOfList() {
+        List<String> list = Lists.newArrayList("uno", "due", "tre");
+        String lastElement = Iterables.getLast(list, null);
+        assertThat(lastElement).isEqualTo("tre");
+    }
+
+    @Test
+    public void getElementByIndex() {
+        String text = "Bacon ipsum dolor sit amet tri-tip rump shoulder kielbasa strip steak";
+        Iterable<String> chars = Splitter.on(CharMatcher.whitespace()).split(text);
+        String elementAtPos5 = Iterables.get(chars, 5);
+        assertThat(elementAtPos5).isEqualTo(elementAtPos5);
+    }
+
+    @Test
+    public void findFirstNonNullElementInList() {
+        List<String> list = Lists.newArrayList(null, "uno", null, "due", "tre");
+        String firstNonNullElement = Iterables.find(list, Predicates.notNull());
+        assertThat(firstNonNullElement).isEqualTo("uno");
+    }
+
+    @Test
+    public void findFirstElementInListWithCustomMatcher() {
+        List<Integer> list = Lists.newArrayList(1, 2, 3);
+        Integer firstElement = Iterables.find(list, new Predicate<Integer>() {
+            public boolean apply(Integer element) {
+                return element == 3;
+            }
+        });
+        assertThat(firstElement).isEqualTo(3);
+    }
+
+    @Test
+    public void findFirstElementInIterableWithCustomMatcher() {
+        final Iterable<String> iterable = Sets.newHashSet("zero", "uno", "due", "tre", "otto", "nove");
+        final String firstElement = Iterables.find(iterable, new Predicate<String>() {
+            public boolean apply(String element) {
+                return element.length() == 4;
+            }
+        });
+        assertThat(firstElement).isEqualTo("zero");
+    }
+
+    @Test
+    public void returnDefaultValueWhenElementNotFound() {
         final String whenNotFound = "";
-        final Iterable<String> collection = Sets.newHashSet("a", "bc", "def");
-        final String findAny = Iterables.find(collection, elem -> "not found".equals(elem), whenNotFound);
-        assertThat(findAny).isEqualTo(whenNotFound);
+        final Iterable<String> iterable = Sets.newHashSet("uno", "due", "tre");
+        final String notFound = Iterables.find(iterable, new Predicate<String>() {
+            public boolean apply(String element) {
+                return "not found".equals(element);
+            }
+        }, whenNotFound);
+        assertThat(notFound).isEqualTo(whenNotFound);
     }
 
     @Test
@@ -127,8 +190,8 @@ public class GuavaCollectionTests {
         final Iterable<String> collection = Sets.newHashSet("a", "bc", "def");
         final Predicate<String> predicate = new Predicate<String>() {
             @Override
-            public boolean apply(@Nullable String input) {
-                return input.length() == 1;
+            public boolean apply(@Nullable String element) {
+                return element.length() == 1;
             }
         };
         final Iterable<String> resultSet = Iterables.filter(collection, predicate);
@@ -155,10 +218,16 @@ public class GuavaCollectionTests {
     }
 
     @Test
-    public void casting() {
-        final List<Number> list = Lists.newArrayList();
-        final List<Integer> castedList = (List<Integer>) (List<? extends Number>) list;
-        assertThat(castedList).isNotNull();
+    public void filterByObjectType() {
+        List<Object> mixedTypeList = Lists.newArrayList();
+        mixedTypeList.add(new Integer(15));
+        mixedTypeList.add(new Double(12));
+        mixedTypeList.add("hello");
+        mixedTypeList.add(Lists.newArrayList());
+        mixedTypeList.add(Maps.newConcurrentMap());
+        mixedTypeList.add("world");
+        Iterable<String> result = Iterables.filter(mixedTypeList, String.class);
+        assertThat(result).containsExactlyInAnyOrder("hello", "world");
     }
 
     @Test
@@ -181,21 +250,31 @@ public class GuavaCollectionTests {
     }
 
     @Test
-    public void transform() {
+    public void transformIterable() {
         final List<String> names = Lists.newArrayList("John", "Jane", "Adam", "Tom");
         final Function<String, Integer> mapper = new Function<String, Integer>() {
             @Override
-            public Integer apply(String input) {
-                return input.length();
+            public Integer apply(String element) {
+                return element.length();
             }
         };
-        // variant 1
         final Iterable<Integer> iterableResult = Iterables.transform(names, mapper);
         assertThat(iterableResult).contains(4, 4, 4, 3);
-        // variant 2
+    }
+
+    @Test
+    public void transformCollection() {
+        final List<String> names = Lists.newArrayList("John", "Jane", "Adam", "Tom");
+        final Function<String, Integer> mapper = new Function<String, Integer>() {
+            @Override
+            public Integer apply(String element) {
+                return element.length();
+            }
+        };
         final Collection<Integer> collectionResult = Collections2.transform(names, mapper);
         assertThat(collectionResult.size()).isEqualTo(4);
         assertThat(collectionResult).contains(4, 4, 4, 3);
+        // changes of the result are reflected in the original collection
         collectionResult.remove(3);
         assertThat(collectionResult.size()).isEqualTo(3);
     }
@@ -213,14 +292,14 @@ public class GuavaCollectionTests {
     public void transformWithComposedFunction() {
         final Function<String, Integer> mapper1 = new Function<String, Integer>() {
             @Override
-            public Integer apply(String input) {
-                return input.length();
+            public Integer apply(String element) {
+                return element.length();
             }
         };
         final Function<Integer, Boolean> mapper2 = new Function<Integer, Boolean>() {
             @Override
-            public Boolean apply(Integer input) {
-                return input % 2 == 0;
+            public Boolean apply(Integer element) {
+                return element % 2 == 0;
             }
         };
         final List<String> names = Lists.newArrayList("John", "Jane", "Adam", "Tom");
@@ -233,14 +312,14 @@ public class GuavaCollectionTests {
     public void combineFilterAndTransformWithFluentIterable() {
         final Predicate<String> predicate = new Predicate<String>() {
             @Override
-            public boolean apply(String input) {
-                return input.startsWith("A") || input.startsWith("T");
+            public boolean apply(String element) {
+                return element.startsWith("A") || element.startsWith("T");
             }
         };
         final Function<String, Integer> mapper = new Function<String, Integer>() {
             @Override
-            public Integer apply(String input) {
-                return input.length();
+            public Integer apply(String element) {
+                return element.length();
             }
         };
         final List<String> names = Lists.newArrayList("John", "Jane", "Adam", "Tom");
@@ -250,5 +329,74 @@ public class GuavaCollectionTests {
                 .toList();
         assertThat(result.size()).isEqualTo(2);
         assertThat(result).containsExactlyInAnyOrder(4, 3);
+    }
+
+    @Test
+    public void partitionListIntoSubLists() {
+        final List<Integer> list = Lists.newArrayList(1, 2, 3, 4, 5, 6, 7, 8);
+        final List<List<Integer>> subSets = Lists.partition(list, 3);
+        final List<Integer> lastPartition = subSets.get(2);
+        final List<Integer> expectedLastPartition = Lists.newArrayList(7, 8);
+        assertThat(subSets.size()).isEqualTo(3);
+        assertThat(lastPartition).isEqualTo(expectedLastPartition);
+    }
+
+    @Test
+    public void partitionCollectionIntoSubLists() {
+        final Collection<Integer> collection = Lists.newArrayList(1, 2, 3, 4, 5, 6, 7, 8);
+        final Iterable<List<Integer>> subSets = Iterables.partition(collection, 3);
+        final List<Integer> firstPartition = subSets.iterator().next();
+        final List<Integer> expectedLastPartition = Lists.newArrayList(1, 2, 3);
+        assertThat(firstPartition).isEqualTo(expectedLastPartition);
+    }
+
+    @Test
+    public void givenListPartitioned_whenOriginalListIsModified_thenPartitionsChangeAsWell() {
+        // keep in mind that the partitions are sublist views of the original collection, which
+        // means that changes in the original collection will be reflected in the partitions
+        final List<Integer> list = Lists.newArrayList(1, 2, 3, 4, 5, 6, 7, 8);
+        final List<List<Integer>> subSets = Lists.partition(list, 3);
+        list.add(9);
+        final List<Integer> lastPartition = subSets.get(2);
+        final List<Integer> expectedLastPartition = Lists.newArrayList(7, 8, 9);
+    }
+
+    @Test
+    public void cast() {
+        final List<Number> list = Lists.newArrayList();
+        final List<Integer> castedList = (List<Integer>) (List<? extends Number>) list;
+        assertThat(castedList).isNotNull();
+    }
+
+    @Test
+    public void convertListToArray() {
+        final List<Integer> list = Lists.newArrayList(0, 1, 2, 3, 4, 5);
+        final int[] array = Ints.toArray(list);
+        assertThat(array).isEqualTo(new int[]{0, 1, 2, 3, 4, 5});
+    }
+
+    @Test
+    public void convertArrayToList() {
+        final Integer[] array = {0, 1, 2, 3, 4, 5};
+        final List<Integer> list = Lists.newArrayList(array);
+        assertThat(list).isEqualTo(Arrays.asList(array));
+    }
+
+    @Test
+    public void frequencyOfAnObjectInIterable() {
+        String jingleChorus = "Oh, jingle bells, jingle bells "
+                + "Jingle all the way "
+                + "Oh, what fun it is to ride "
+                + "In a one horse open sleigh "
+                + "Jingle bells, jingle bells "
+                + "Jingle all the way "
+                + "Oh, what fun it is to ride "
+                + "In a one horse open sleigh";
+        List<String> words = Splitter.on(CharMatcher.anyOf(" ."))
+                .trimResults(CharMatcher.is('.'))
+                .omitEmptyStrings()
+                .splitToList(jingleChorus.toLowerCase());
+        int numberOfOccurrences = Iterables.frequency(words, "jingle");
+        assertThat(numberOfOccurrences).isEqualTo(6);
     }
 }
