@@ -1,4 +1,4 @@
-package de.gerritschrader;
+package de.schrader;
 
 import com.google.common.base.*;
 import com.google.common.collect.*;
@@ -14,46 +14,46 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 public class CollectionTests {
 
     @Test
-    public void createNewArrayList() {
+    public void newArrayList() {
         final List<Number> list = Lists.newArrayList();
         assertThat(list).isNotNull().isEmpty();
     }
 
     @Test
-    public void createNewHashSet() {
+    public void newHashSet() {
         final Set<Number> set = Sets.newHashSet();
         assertThat(set).isNotNull().isEmpty();
     }
 
     @Test
-    public void createNewHashMap() {
+    public void newHashMap() {
         final Map<Number, String> map = Maps.newHashMap();
         assertThat(map).isNotNull().isEmpty();
     }
 
     @Test
-    public void createImmutableListFromStandardList() {
+    public void immutableListFromStandardList() {
         final List<Number> list = Lists.newArrayList();
         final ImmutableList<Number> immutableList = ImmutableList.copyOf(list);
         assertThat(immutableList).isNotNull().isEmpty();
     }
 
     @Test
-    public void createImmutableSetFromStandardSet() {
+    public void immutableSetFromStandardSet() {
         final Set<Number> set = Sets.newHashSet();
         final ImmutableSet<Number> immutableSet = ImmutableSet.copyOf(set);
         assertThat(immutableSet).isNotNull().isEmpty();
     }
 
     @Test
-    public void createImmutableMapFromStandardMap() {
+    public void immutableMapFromStandardMap() {
         final Map<Number, String> map = Maps.newHashMap();
         final ImmutableMap<Number, String> immutableMap = ImmutableMap.copyOf(map);
         assertThat(immutableMap).isNotNull().isEmpty();
     }
 
     @Test
-    public void addIterableToCollection() {
+    public void addAll() {
         final String[] array = {"uno", "due", "tre"};
         final Iterable<String> iterable = Lists.newArrayList(array);
         final Collection<String> collection = Lists.newArrayList();
@@ -399,4 +399,24 @@ public class CollectionTests {
         int numberOfOccurrences = Iterables.frequency(words, "jingle");
         assertThat(numberOfOccurrences).isEqualTo(6);
     }
+
+    /*
+    Set<WahlscheinTO> zuDruckendeWahlscheine = FluentIterable.from(wahlscheineZuSpeichern)
+        .transformAndConcat(new Function<WaehlerverzeichnisEintragTO, Set<WahlscheinTO>>() {
+            @Nullable
+            @Override
+            public Set<WahlscheinTO> apply(@Nullable WaehlerverzeichnisEintragTO waehlerverzeichnisEintragTO)
+            {
+                return waehlerverzeichnisEintragTO.getWahlscheine();
+            }
+        })
+        .filter(new Predicate<WahlscheinTO>() {
+
+            @Override
+            public boolean apply(@Nullable WahlscheinTO wahlscheinTO)
+            {
+                return wahlscheinTO.getWahlscheinstatus() == AUSGEHAENDIGT && wahlscheinTO.getAusgestelltAm() == null;
+            }
+                })
+    */
 }
