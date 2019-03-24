@@ -1,4 +1,4 @@
-package de.schrader;
+package schrader.guava.test;
 
 import com.google.common.base.*;
 import com.google.common.collect.*;
