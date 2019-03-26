@@ -400,6 +400,14 @@ public class CollectionTests {
         assertThat(numberOfOccurrences).isEqualTo(6);
     }
 
+    @Test
+    public void equalLists() {
+        final Iterable<String> list = Lists.newArrayList("A", "B", "C");
+        final Iterable<String> list2 = Lists.newArrayList("A", "B", "C");
+        assertThat(Iterables.elementsEqual(list, list2)).isTrue();
+        assertThat(list.equals(list2)).isTrue(); // alternative
+    }
+
     /*
     Set<WahlscheinTO> zuDruckendeWahlscheine = FluentIterable.from(wahlscheineZuSpeichern)
         .transformAndConcat(new Function<WaehlerverzeichnisEintragTO, Set<WahlscheinTO>>() {
