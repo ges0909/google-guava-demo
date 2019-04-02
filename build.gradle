@@ -1,5 +1,6 @@
 plugins {
     id 'java-library'
+    id 'idea'
 }
 
 repositories {
@@ -10,6 +11,8 @@ dependencies {
     implementation 'com.google.guava:guava:27.0.1-jre'
     testImplementation group: 'junit', name: 'junit', version: '4.12'
     testCompile group: 'org.assertj', name: 'assertj-core', version: '3.11.1'
+    compile group: 'joda-time', name: 'joda-time', version: '2.10.1'
+
 }
 
 test {
