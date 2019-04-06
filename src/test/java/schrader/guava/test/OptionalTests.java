@@ -15,8 +15,8 @@ public class OptionalTests {
 
     @Test
     public void of() {
-        Optional<String> optional = Optional.of("uno");
-        assertThat(optional.isPresent()).isTrue();
+        Optional<String> o = Optional.of("uno");
+        assertThat(o.isPresent()).isTrue();
     }
 
     @Test
@@ -26,56 +26,56 @@ public class OptionalTests {
 
     @Test
     public void fromNullable() {
-        Optional<String> optional = Optional.fromNullable(null);
-        assertThat(optional.isPresent()).isFalse();
+        Optional<String> o = Optional.fromNullable(null);
+        assertThat(o.isPresent()).isFalse();
     }
 
     @Test
     public void absent() {
-        Optional<String> optional = Optional.absent();
-        assertThat(optional.isPresent()).isFalse();
+        Optional<String> o = Optional.absent();
+        assertThat(o.isPresent()).isFalse();
     }
 
     @Test
     public void get() {
-        Optional<String> optional = Optional.of("uno");
-        assertThat(optional.get()).isEqualTo("uno");
+        Optional<String> o = Optional.of("uno");
+        assertThat(o.get()).isEqualTo("uno");
     }
 
     @Test
     public void or() {
-        Optional<String> optional = Optional.fromNullable(null);
-        assertThat(optional.or("default")).isEqualTo("default");
+        Optional<String> o = Optional.fromNullable(null);
+        assertThat(o.or("default")).isEqualTo("default");
     }
 
     @Test
     public void orNull() {
-        Optional<String> optional = Optional.fromNullable(null);
-        assertThat(optional.orNull()).isNull();
+        Optional<String> o = Optional.fromNullable(null);
+        assertThat(o.orNull()).isNull();
     }
 
     @Test
     public void transform() {
-        Optional<String> optional = Optional.of("uno");
-        Optional<Integer> mappedOptional = optional.transform(new Function<String, Integer>() {
+        Optional<String> o = Optional.of("uno");
+        Optional<Integer> mo = o.transform(new Function<String, Integer>() {
             @Nullable
             @Override
             public Integer apply(@Nullable String input) {
                 return input.length();
             }
         });
-        assertThat(mappedOptional.isPresent());
-        assertThat(mappedOptional.get()).isEqualTo(3);
+        assertThat(mo.isPresent());
+        assertThat(mo.get()).isEqualTo(3);
     }
 
     @Test
     public void presentInstances() {
-        List<Optional<String>> optionalList = Lists.newArrayList(
+        List<Optional<String>> o = Lists.newArrayList(
                 Optional.of("uno"),
                 Optional.absent(),
                 Optional.fromNullable("due"),
                 Optional.fromNullable(null));
-        Iterable<String> presentInstances = Optional.presentInstances(optionalList);
+        Iterable<String> presentInstances = Optional.presentInstances(o);
         assertThat(presentInstances).contains("uno", "due");
     }
 }
