@@ -1,6 +1,7 @@
 package schrader.guava.test;
 
 import com.google.common.collect.*;
+import com.sun.istack.internal.NotNull;
 import org.junit.Test;
 
 import java.util.List;
@@ -18,7 +19,8 @@ public class TableTest {
 
     @Test
     public void treeBasedTable() {
-        final Table<String, String, Integer> table = TreeBasedTable.create(); // for natural ordering of row and column keys; uses TreeMap internally
+        final Table<String, String, Integer> table = TreeBasedTable.create(); // for natural ordering of row and column
+                                                                              // keys; uses TreeMap internally
     }
 
     @Test
@@ -31,8 +33,7 @@ public class TableTest {
     @Test
     public void immutableTable() {
         Table<String, String, Integer> universityCourseSeatTable = ImmutableTable.<String, String, Integer>builder()
-                .put("Mumbai", "Chemical", 120)
-                .build();
+                .put("Mumbai", "Chemical", 120).build();
     }
 
     /**
@@ -197,6 +198,7 @@ public class TableTest {
         table.put("002", "BM A1", 150);
 
         Integer[][] model = convertTableToArray(table);
+
         assertThat(model[0][0]).isEqualTo(100);
         assertThat(model[0][1]).isEqualTo(200);
         assertThat(model[0][2]).isEqualTo(300);
@@ -205,16 +207,13 @@ public class TableTest {
         assertThat(model[1][2]).isEqualTo(150);
     }
 
-    private Integer[][] convertTableToArray(Table<String, String, Integer> table) {
-        int rows = table.rowKeySet().size();
-        int cols = table.columnKeySet().size();
-        Integer[][] array = new Integer[rows][cols];
+    private Integer[][] convertTableToArray(@NotNull Table<String, String, Integer> table) {
+        Integer[][] array = new Integer[table.rowKeySet().size()][table.columnKeySet().size()];
         int row = 0;
         for (String rowKey : table.rowKeySet()) {
             int col = 0;
             for (String colKey : table.columnKeySet()) {
-                Integer value = table.get(rowKey, colKey);
-                array[row][col++] = value;
+                array[row][col++] = table.get(rowKey, colKey);
             }
             row++;
         }
