@@ -1,14 +1,19 @@
 package schrader.guava.test;
 
-import com.google.common.collect.*;
-import com.sun.istack.internal.NotNull;
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import com.google.common.collect.ArrayTable;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.ImmutableTable;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Table;
+import com.google.common.collect.TreeBasedTable;
+
+import org.junit.Test;
 
 public class TableTest {
 
@@ -19,8 +24,8 @@ public class TableTest {
 
     @Test
     public void treeBasedTable() {
-        final Table<String, String, Integer> table = TreeBasedTable.create(); // for natural ordering of row and column
-                                                                              // keys; uses TreeMap internally
+        // for natural ordering of row and column; uses TreeMap internally
+        final Table<String, String, Integer> table = TreeBasedTable.create();
     }
 
     @Test
@@ -207,8 +212,8 @@ public class TableTest {
         assertThat(model[1][2]).isEqualTo(150);
     }
 
-    private Integer[][] convertTableToArray(@NotNull Table<String, String, Integer> table) {
-        Integer[][] array = new Integer[table.rowKeySet().size()][table.columnKeySet().size()];
+    private Integer[][] convertTableToArray(final Table<String, String, Integer> table) {
+        final Integer[][] array = new Integer[table.rowKeySet().size()][table.columnKeySet().size()];
         int row = 0;
         for (String rowKey : table.rowKeySet()) {
             int col = 0;

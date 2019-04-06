@@ -19,7 +19,7 @@ public class AKDBTest {
     @Test
     public void datumPresentAndOrtPresent() {
         String actual = formatiereAusloeser(Optional.of(LocalDate.now()), Optional.of("Berlin"));
-        assertThat(actual).isEqualTo("Wegzug (verzogen am 02.04.2019 nach Berlin)");
+        assertThat(actual).isEqualTo("Wegzug (verzogen am 06.04.2019 nach Berlin)");
     }
 
     @Test
@@ -31,7 +31,7 @@ public class AKDBTest {
     @Test
     public void datumPresentAndOrtAbsent() {
         String actual = formatiereAusloeser(Optional.of(LocalDate.now()), Optional.absent());
-        assertThat(actual).isEqualTo("Wegzug (verzogen am 02.04.2019 nach Unbekannt)");
+        assertThat(actual).isEqualTo("Wegzug (verzogen am 06.04.2019 nach Unbekannt)");
     }
 
     @Test
