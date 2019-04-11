@@ -79,15 +79,19 @@ public class CollectionTests {
     }
 
     @Test
-    public void checkIfAnyElementsMatchACondition() {
-        final Iterable<String> collection = Lists.newArrayList("a", "bc", "def");
+    public void checkIfAnyElementMatchACondition() {
+        final Iterable<String> collection = Lists.newArrayList("uno", "due", "tre");
         // 'any' returns 'true' if any element satisfies the predicate
-        final boolean containsAny = Iterables.any(collection, elem -> elem != null && elem.length() == 1);
+        final boolean containsAny = Iterables.any(collection, new Predicate<String>() {
+            @Override
+            public boolean apply(@Nullable String input) {
+                return input.length() == 3;
+            }
+        });
         assertThat(containsAny).isTrue();
-        final boolean containsNot = Iterables.any(collection, "uno"::equals);
+        final boolean containsNot = Iterables.any(collection, "one"::equals);
         assertThat(containsNot).isFalse();
     }
-
 
     @Test
     public void checkIfAllElementsMatchACondition() {
@@ -106,17 +110,30 @@ public class CollectionTests {
     }
 
     @Test
-    public void getFirstElementOfList() {
+    public void getFirst() {
         List<String> list = Lists.newArrayList("uno", "due", "tre");
         String firstElement = Iterables.getFirst(list, null);
         assertThat(firstElement).isEqualTo("uno");
     }
 
     @Test
-    public void getLastElementOfList() {
+    public void getLast() {
         List<String> list = Lists.newArrayList("uno", "due", "tre");
         String lastElement = Iterables.getLast(list, null);
         assertThat(lastElement).isEqualTo("tre");
+    }
+
+    @Test
+    public void getOnlyElement() {
+        List<String> list = Lists.newArrayList("uno");
+        String anyElement = Iterables.getOnlyElement(list);
+        assertThat(anyElement).isEqualTo("uno");
+    }
+
+    @Test
+    public void getOnlyElementFailed() {
+        List<String> list = Lists.newArrayList("uno", "due");
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> Iterables.getOnlyElement(list));
     }
 
     @Test
@@ -228,25 +245,6 @@ public class CollectionTests {
         mixedTypeList.add("world");
         Iterable<String> result = Iterables.filter(mixedTypeList, String.class);
         assertThat(result).containsExactlyInAnyOrder("hello", "world");
-    }
-
-    @Test
-    public void hashBasedTable() {
-        // first name, last name, age
-        final Table<String /*row key*/, String /*column key*/, Integer /*cell value*/> table = HashBasedTable.create();
-        table.put("Max", "Mustermann", 44);
-        table.put("Biene", "Maya", 4);
-        final Integer cellValue = table.get("Biene", "Maya");
-        assertThat(table.size()).isEqualTo(2);
-        assertThat(cellValue).isEqualTo(4);
-    }
-
-    @Test
-    public void treeBasedTable() {
-        // if a table is needed whose row keys and the column keys need to be ordered by
-        // their natural ordering or by supplying comparators, use a TreeBasedTable, which
-        // uses TreeMap internally
-        final Table<String, String, Integer> table = HashBasedTable.create();
     }
 
     @Test

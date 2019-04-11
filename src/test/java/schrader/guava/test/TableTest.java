@@ -1,19 +1,13 @@
 package schrader.guava.test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import com.google.common.collect.*;
+import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.collect.ArrayTable;
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.ImmutableTable;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Table;
-import com.google.common.collect.TreeBasedTable;
-
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TableTest {
 
