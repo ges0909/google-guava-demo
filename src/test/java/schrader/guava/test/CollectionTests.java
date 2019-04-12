@@ -406,6 +406,20 @@ public class CollectionTests {
         assertThat(list.equals(list2)).isTrue(); // alternative
     }
 
+
+    @Test
+    public void groupBy() {
+        final List<String> list = Lists.newArrayList("uno", "due", "tre", "quattro", "cinque");
+        final Multimap<Integer, String> groupByLength = Multimaps.index(list, new Function<String, Integer>() {
+            @Nullable
+            @Override
+            public Integer apply(@Nullable String input) {
+                return input.length();
+            }
+        });
+        assertThat(groupByLength.asMap().size()).isEqualTo(3);
+    }
+
     /*
     Set<WahlscheinTO> zuDruckendeWahlscheine = FluentIterable.from(wahlscheineZuSpeichern)
         .transformAndConcat(new Function<WaehlerverzeichnisEintragTO, Set<WahlscheinTO>>() {

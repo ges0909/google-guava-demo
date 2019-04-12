@@ -184,6 +184,25 @@ public class TableTest {
         assertThat(courseSet).hasSize(3);
     }
 
+    /**
+     * Ordering
+     */
+
+    @Test
+    public void check_if_order_of_added_row_keys_remain_unchanged() {
+        Table<String, String, Integer> table = HashBasedTable.create();
+        table.put("5", "A", 5);
+        table.put("3", "A", 3);
+        table.put("1", "A", 1);
+        table.put("2", "A", 2);
+        table.put("4", "A", 4);
+        assertThat(table.rowKeySet().toArray()).isEqualTo(new String[]{"5", "3", "1", "2", "4"});
+    }
+
+    /**
+     *
+     */
+
     @Test
     public void givenTable_convertToArray() {
         final List<String> rowTable = Lists.newArrayList("001", "002");
