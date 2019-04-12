@@ -65,4 +65,4 @@ atlassian-ide-plugin.xml
 .nbattrs
 
 ## VS Code
-.vscode/launch.json
+.vscode
