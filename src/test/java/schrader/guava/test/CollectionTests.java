@@ -54,15 +54,11 @@ public class CollectionTests {
 
     @Test
     public void addAll() {
-        final String[] array = {"uno", "due", "tre"};
+        final String[] array = { "uno", "due", "tre" };
         final Iterable<String> iterable = Lists.newArrayList(array);
         final Collection<String> collection = Lists.newArrayList();
         Iterables.addAll(collection, iterable);
-        assertThat(collection)
-                .isNotNull()
-                .isNotEmpty()
-                .hasSize(array.length)
-                .containsExactly("uno", "due", "tre");
+        assertThat(collection).isNotNull().isNotEmpty().hasSize(array.length).containsExactly("uno", "due", "tre");
     }
 
     @Test
@@ -71,10 +67,7 @@ public class CollectionTests {
         List<String> list2 = Lists.newArrayList("due", "tre");
         List<String> list3 = Lists.newArrayList("quattro", "cinque");
         Iterable<String> iterable = Iterables.concat(list1, list2, list3);
-        assertThat(iterable)
-                .isNotNull()
-                .isNotEmpty()
-                .hasSize(list1.size() + list2.size() + list3.size())
+        assertThat(iterable).isNotNull().isNotEmpty().hasSize(list1.size() + list2.size() + list3.size())
                 .containsExactly("uno", "due", "tre", "quattro", "cinque");
     }
 
@@ -195,10 +188,12 @@ public class CollectionTests {
         final Collection<String> collectionResult = Collections2.filter(names, Predicates.containsPattern("a"));
         assertThat(collectionResult.size()).isEqualTo(2);
         assertThat(collectionResult).containsExactlyInAnyOrder("Jane", "Adam");
-        // the result of 'Collections.filter()' is a live view of the original collection; changes to one will be reflected in the other
+        // the result of 'Collections.filter()' is a live view of the original
+        // collection; changes to one will be reflected in the other
         collectionResult.add("Anna");
         assertThat(names.size()).isEqualTo(5);
-        // 'result' is constrained by the predicate; if we add an element that does’nt satisfy that Predicate, an IllegalArgumentException will be thrown
+        // 'result' is constrained by the predicate; if we add an element that does’nt
+        // satisfy that Predicate, an IllegalArgumentException will be thrown
         assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> collectionResult.add("Elvis"));
     }
 
@@ -219,9 +214,7 @@ public class CollectionTests {
     public void filterWithMultiplePredicates() {
         final List<String> names = Lists.newArrayList("John", "Jane", "Adam", "Tom");
         final Collection<String> result = Collections2.filter(names,
-                Predicates.or(
-                        Predicates.containsPattern("J"),
-                        Predicates.not(Predicates.containsPattern("a"))));
+                Predicates.or(Predicates.containsPattern("J"), Predicates.not(Predicates.containsPattern("a"))));
         assertThat(result.size()).isEqualTo(3);
         assertThat(result).containsExactlyInAnyOrder("John", "Jane", "Tom");
     }
@@ -321,10 +314,7 @@ public class CollectionTests {
             }
         };
         final List<String> names = Lists.newArrayList("John", "Jane", "Adam", "Tom");
-        final Collection<Integer> result = FluentIterable.from(names)
-                .filter(predicate)
-                .transform(mapper)
-                .toList();
+        final Collection<Integer> result = FluentIterable.from(names).filter(predicate).transform(mapper).toList();
         assertThat(result.size()).isEqualTo(2);
         assertThat(result).containsExactlyInAnyOrder(4, 3);
     }
@@ -350,8 +340,10 @@ public class CollectionTests {
 
     @Test
     public void givenListPartitioned_whenOriginalListIsModified_thenPartitionsChangeAsWell() {
-        // keep in mind that the partitions are sublist views of the original collection, which
-        // means that changes in the original collection will be reflected in the partitions
+        // keep in mind that the partitions are sublist views of the original
+        // collection, which
+        // means that changes in the original collection will be reflected in the
+        // partitions
         final List<Integer> list = Lists.newArrayList(1, 2, 3, 4, 5, 6, 7, 8);
         final List<List<Integer>> subSets = Lists.partition(list, 3);
         list.add(9);
@@ -370,29 +362,22 @@ public class CollectionTests {
     public void convertListToArray() {
         final List<Integer> list = Lists.newArrayList(0, 1, 2, 3, 4, 5);
         final int[] array = Ints.toArray(list);
-        assertThat(array).isEqualTo(new int[]{0, 1, 2, 3, 4, 5});
+        assertThat(array).isEqualTo(new int[] { 0, 1, 2, 3, 4, 5 });
     }
 
     @Test
     public void convertArrayToList() {
-        final Integer[] array = {0, 1, 2, 3, 4, 5};
+        final Integer[] array = { 0, 1, 2, 3, 4, 5 };
         final List<Integer> list = Lists.newArrayList(array);
         assertThat(list).isEqualTo(Arrays.asList(array));
     }
 
     @Test
     public void frequencyOfAnObjectInIterable() {
-        String jingleChorus = "Oh, jingle bells, jingle bells "
-                + "Jingle all the way "
-                + "Oh, what fun it is to ride "
-                + "In a one horse open sleigh "
-                + "Jingle bells, jingle bells "
-                + "Jingle all the way "
-                + "Oh, what fun it is to ride "
-                + "In a one horse open sleigh";
-        List<String> words = Splitter.on(CharMatcher.anyOf(" ."))
-                .trimResults(CharMatcher.is('.'))
-                .omitEmptyStrings()
+        String jingleChorus = "Oh, jingle bells, jingle bells " + "Jingle all the way " + "Oh, what fun it is to ride "
+                + "In a one horse open sleigh " + "Jingle bells, jingle bells " + "Jingle all the way "
+                + "Oh, what fun it is to ride " + "In a one horse open sleigh";
+        List<String> words = Splitter.on(CharMatcher.anyOf(" .")).trimResults(CharMatcher.is('.')).omitEmptyStrings()
                 .splitToList(jingleChorus.toLowerCase());
         int numberOfOccurrences = Iterables.frequency(words, "jingle");
         assertThat(numberOfOccurrences).isEqualTo(6);
@@ -405,7 +390,6 @@ public class CollectionTests {
         assertThat(Iterables.elementsEqual(list, list2)).isTrue();
         assertThat(list.equals(list2)).isTrue(); // alternative
     }
-
 
     @Test
     public void groupBy() {
@@ -421,22 +405,19 @@ public class CollectionTests {
     }
 
     /*
-    Set<WahlscheinTO> zuDruckendeWahlscheine = FluentIterable.from(wahlscheineZuSpeichern)
-        .transformAndConcat(new Function<WaehlerverzeichnisEintragTO, Set<WahlscheinTO>>() {
-            @Nullable
-            @Override
-            public Set<WahlscheinTO> apply(@Nullable WaehlerverzeichnisEintragTO waehlerverzeichnisEintragTO)
-            {
-                return waehlerverzeichnisEintragTO.getWahlscheine();
-            }
-        })
-        .filter(new Predicate<WahlscheinTO>() {
-
-            @Override
-            public boolean apply(@Nullable WahlscheinTO wahlscheinTO)
-            {
-                return wahlscheinTO.getWahlscheinstatus() == AUSGEHAENDIGT && wahlscheinTO.getAusgestelltAm() == null;
-            }
-                })
-    */
+     * Set<WahlscheinTO> zuDruckendeWahlscheine =
+     * FluentIterable.from(wahlscheineZuSpeichern) .transformAndConcat(new
+     * Function<WaehlerverzeichnisEintragTO, Set<WahlscheinTO>>() {
+     * 
+     * @Nullable
+     * 
+     * @Override public Set<WahlscheinTO> apply(@Nullable
+     * WaehlerverzeichnisEintragTO waehlerverzeichnisEintragTO) { return
+     * waehlerverzeichnisEintragTO.getWahlscheine(); } }) .filter(new
+     * Predicate<WahlscheinTO>() {
+     * 
+     * @Override public boolean apply(@Nullable WahlscheinTO wahlscheinTO) { return
+     * wahlscheinTO.getWahlscheinstatus() == AUSGEHAENDIGT &&
+     * wahlscheinTO.getAusgestelltAm() == null; } })
+     */
 }
