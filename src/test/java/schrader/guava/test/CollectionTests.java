@@ -54,7 +54,7 @@ public class CollectionTests {
 
     @Test
     public void addAll() {
-        final String[] array = { "uno", "due", "tre" };
+        final String[] array = {"uno", "due", "tre"};
         final Iterable<String> iterable = Lists.newArrayList(array);
         final Collection<String> collection = Lists.newArrayList();
         Iterables.addAll(collection, iterable);
@@ -135,6 +135,32 @@ public class CollectionTests {
         Iterable<String> chars = Splitter.on(CharMatcher.whitespace()).split(text);
         String elementAtPos5 = Iterables.get(chars, 5);
         assertThat(elementAtPos5).isEqualTo(elementAtPos5);
+    }
+
+    @Test
+    public void any() {
+        Set<Integer> set = Sets.newHashSet(1, 2, 3);
+        boolean result = Iterables.any(set, new Predicate<Integer>() {
+            @Override
+            public boolean apply(final Integer input) {
+                return input == 2;
+            }
+        });
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void contains() {
+        Set<Integer> set = Sets.newHashSet(1, 2, 3);
+        boolean result = set.contains(2);
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    public void containsAll() {
+        Set<Integer> set = Sets.newHashSet(1, 2, 3);
+        boolean result = set.containsAll(Lists.newArrayList(2, 1, 3));
+        assertThat(result).isTrue();
     }
 
     @Test
@@ -230,8 +256,8 @@ public class CollectionTests {
     @Test
     public void filterByObjectType() {
         List<Object> mixedTypeList = Lists.newArrayList();
-        mixedTypeList.add(new Integer(15));
-        mixedTypeList.add(new Double(12));
+        mixedTypeList.add(15);
+        mixedTypeList.add(12.0);
         mixedTypeList.add("hello");
         mixedTypeList.add(Lists.newArrayList());
         mixedTypeList.add(Maps.newConcurrentMap());
@@ -362,12 +388,12 @@ public class CollectionTests {
     public void convertListToArray() {
         final List<Integer> list = Lists.newArrayList(0, 1, 2, 3, 4, 5);
         final int[] array = Ints.toArray(list);
-        assertThat(array).isEqualTo(new int[] { 0, 1, 2, 3, 4, 5 });
+        assertThat(array).isEqualTo(new int[]{0, 1, 2, 3, 4, 5});
     }
 
     @Test
     public void convertArrayToList() {
-        final Integer[] array = { 0, 1, 2, 3, 4, 5 };
+        final Integer[] array = {0, 1, 2, 3, 4, 5};
         final List<Integer> list = Lists.newArrayList(array);
         assertThat(list).isEqualTo(Arrays.asList(array));
     }
@@ -408,14 +434,14 @@ public class CollectionTests {
      * Set<WahlscheinTO> zuDruckendeWahlscheine =
      * FluentIterable.from(wahlscheineZuSpeichern) .transformAndConcat(new
      * Function<WaehlerverzeichnisEintragTO, Set<WahlscheinTO>>() {
-     * 
+     *
      * @Nullable
-     * 
+     *
      * @Override public Set<WahlscheinTO> apply(@Nullable
      * WaehlerverzeichnisEintragTO waehlerverzeichnisEintragTO) { return
      * waehlerverzeichnisEintragTO.getWahlscheine(); } }) .filter(new
      * Predicate<WahlscheinTO>() {
-     * 
+     *
      * @Override public boolean apply(@Nullable WahlscheinTO wahlscheinTO) { return
      * wahlscheinTO.getWahlscheinstatus() == AUSGEHAENDIGT &&
      * wahlscheinTO.getAusgestelltAm() == null; } })

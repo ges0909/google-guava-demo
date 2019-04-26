@@ -50,6 +50,8 @@ public class TableTest {
         int seatCount = universityCourseSeatTable.get("Mumbai", "IT");
         Integer seatCountForNoEntry = universityCourseSeatTable.get("Oxford", "IT");
 
+        Integer x = universityCourseSeatTable.get("Mumbai", "abc");
+
         assertThat(seatCount).isEqualTo(60);
         assertThat(seatCountForNoEntry).isNull();
     }
